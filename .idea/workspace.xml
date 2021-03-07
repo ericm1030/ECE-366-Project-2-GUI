@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6fea4a7b-a66c-48ce-aa4d-95c7c80d3d7d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +72,7 @@
       <workItem from="1614829142504" duration="1251000" />
       <workItem from="1614903087305" duration="3755000" />
       <workItem from="1614970660443" duration="661000" />
-      <workItem from="1615042989121" duration="41714000" />
+      <workItem from="1615042989121" duration="41811000" />
     </task>
     <task id="LOCAL-00001" summary="Project 2 with simple GUI&#10;Free Run Mode not implemented yet&#10;Further testing needs to be done">
       <created>1615077991735</created>
@@ -83,7 +81,21 @@
       <option name="project" value="LOCAL" />
       <updated>1615077991735</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Project 2 with simple GUI&#10;Free Run Mode not implemented yet&#10;Further testing needs to be done">
+      <created>1615085204098</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1615085204098</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Project 2 with simple GUI&#10;Free Run Mode not implemented yet&#10;Further testing needs to be done">
+      <created>1615085274543</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1615085274543</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -93,6 +105,7 @@
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.asm" />
   </component>
   <component name="VcsManagerConfiguration">
+    <MESSAGE value="Project 2 with simple GUI&#10;Free Run Mode not implemented yet&#10;&#10;Main Window GUI is finished and working/updating values as it is stepping through the program." />
     <MESSAGE value="Project 2 with simple GUI&#10;Free Run Mode not implemented yet&#10;Further testing needs to be done" />
     <option name="LAST_COMMIT_MESSAGE" value="Project 2 with simple GUI&#10;Free Run Mode not implemented yet&#10;Further testing needs to be done" />
   </component>

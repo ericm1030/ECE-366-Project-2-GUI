@@ -597,45 +597,6 @@ def simulator(instr_mem, bin_instr):
 
                 window.refresh()
 
-        # elif step_flag == 'free':
-        #     while True:  # Event Loop
-        #         event, values = window.read()
-        #
-        #         reg_string = ''
-        #         dm_string = ''
-        #         # If exit is pressed or window is closed close the window and break loop
-        #         if event == sg.WIN_CLOSED or event == 'Exit':
-        #             window.close()
-        #             break
-        #
-        #         if True:
-        #             # Print our Binary Instruction Information
-        #
-        #             window['-OUTPUT-' + sg.WRITE_ONLY_KEY].update(
-        #                 window['-OUTPUT-' + sg.WRITE_ONLY_KEY].get() + "PC: " +
-        #                 str(pc) + "\n" + instr_str + "\nASM: " + instr_mem[pc] + "\n")
-        #             for i in reg_key:
-        #                 reg_string += (str(i) + ": " + str(reg[i]) + "\n")
-        #
-        #             window['-REG-' + sg.WRITE_ONLY_KEY].update(reg_string)
-        #             # Print Register
-        #             t = 0
-        #             for n in dm_key:
-        #                 if t == 8:  # Print 11 registers per line
-        #                     t = 0
-        #                     dm_string += '\n'
-        #                 dm_string += (str(hex(n)).upper() + ": " + str(data_mem[n]) + "\t")
-        #
-        #             window['-DM-' + sg.WRITE_ONLY_KEY].update(dm_string)
-        #             window.refresh()
-        #             break
-        #
-        #         if pc == last_key + 4:
-        #             window.close()
-        #             break
-        #
-        #         window.refresh()
-        # -----------------------------------------------------------------------------------------------------------------
 
         stats_list[0] += 1
         # Update to the next instruction
