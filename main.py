@@ -285,7 +285,7 @@ def parser(i):
 
 def simulator(instr_mem, bin_instr):
     # Get Run Mode of the program
-    step_flag = select_run_mode()
+    run_mode = select_run_mode()
 
     pc = 0
 
@@ -314,40 +314,77 @@ def simulator(instr_mem, bin_instr):
     # Last instruction used as a key for loop
     last_key = list(instr_mem)[-1]
 
-    # register Key List
+
+
+    # Get the registers and keys in the format for the GUI
     reg_key = list(reg.keys())
+
     dm_key = list(data_mem.keys())
 
     reg_list = []
+
     t_list = []
+
     for i in reg_key:
+
         reg_list.append([i, reg[i]])
 
     for n in range(8192, 12288, 32):
+
         t_list.append([n, data_mem[int(n)], data_mem[int(n) + 4], data_mem[int(n) + 8], data_mem[int(n) + 12],
                        data_mem[int(n) + 16], data_mem[int(n) + 20], data_mem[int(n) + 24], data_mem[int(n) + 28]])
 
-    # Main window code setup
-    layout = [[sg.Text('Step by Step Mode Instructions', size=(30, 1), k='-T1-'),
-               sg.T("Register", justification='r', k='-T2-')],
-              [sg.Multiline(size=(66, 20), key='-OUTPUT-' + sg.WRITE_ONLY_KEY, write_only=True, autoscroll=True),
-               sg.Table(values=reg_list, key='-REG-', headings=["Register", "Value"], vertical_scroll_only=True,
-                        auto_size_columns=True, num_rows=30,
-                        alternating_row_color='#DAE0E6', header_background_color='#DAE0E6')],
-              [sg.T("Data Memory", key='-T3-')],
-              [sg.Table(values=t_list, headings=["Address", "Value(+0)", 'Value(+4)', 'Value(+8)', 'Value(+12)',
-                                                 'Value(+16)', 'Value(+20)', 'Value(+24)', 'Value(+28)'], key='-DM-',
-                        vertical_scroll_only=True, alternating_row_color='#DAE0E6', header_background_color='#DAE0E6'
-                        )],
-              [sg.Button('Exit'), sg.Button('Next', k='-NEXT-', bind_return_key=True, enable_events=True)]]
+    # Main Window GUI Setup
+    if run_mode == 'step':
 
-    window = sg.Window("Project 2: Mars Simulator - Eric Moravek", layout, finalize=True, resizable=True)
-    window['-REG-'].expand(True, True, True)
-    window['-DM-'].expand(True, True, True)
-    window['-OUTPUT-' + sg.WRITE_ONLY_KEY].expand(True, True, True)
-    window['-T1-'].expand(True, True, True)
-    window['-T2-'].expand(True, True, True)
-    window['-T3-'].expand(True, True, True)
+        layout = [[sg.Text('Step by Step Mode Instructions', size=(30, 1), k='-T1-'),
+                   sg.T("Register", justification='r', k='-T2-')],
+                  [sg.Multiline(size=(66, 20), key='-OUTPUT-' + sg.WRITE_ONLY_KEY, write_only=True, autoscroll=True),
+                   sg.Table(values=reg_list, key='-REG-', headings=["Register", "Value"], vertical_scroll_only=True,
+                            auto_size_columns=True, num_rows=30,
+                            alternating_row_color='#DAE0E6', header_background_color='#DAE0E6')],
+                  [sg.T("Data Memory", key='-T3-')],
+                  [sg.Table(values=t_list, headings=["Address", "Value(+0)", 'Value(+4)', 'Value(+8)', 'Value(+12)',
+                                                     'Value(+16)', 'Value(+20)', 'Value(+24)', 'Value(+28)'], key='-DM-',
+                            vertical_scroll_only=True, alternating_row_color='#DAE0E6', header_background_color='#DAE0E6'
+                            )],
+                  [sg.Button('Exit'), sg.Button('Next', k='-NEXT-', bind_return_key=True, enable_events=True)]]
+
+        window = sg.Window("Project 2: Mars Simulator - Eric Moravek", layout, finalize=True, resizable=True)
+        window['-REG-'].expand(True, True, True)
+        window['-DM-'].expand(True, True, True)
+        window['-OUTPUT-' + sg.WRITE_ONLY_KEY].expand(True, True, True)
+        window['-T1-'].expand(True, True, True)
+        window['-T2-'].expand(True, True, True)
+        window['-T3-'].expand(True, True, True)
+
+    elif run_mode == 'free':
+        layout = [[sg.Text('Free Run Mode Instructions', size=(30, 1), k='-T1-'),
+                   sg.T("Register", justification='r', k='-T2-')],
+                  [sg.Multiline(size=(66, 20), key='-OUTPUT-' + sg.WRITE_ONLY_KEY, write_only=True, autoscroll=True),
+                   sg.Table(values=reg_list, key='-REG-', headings=["Register", "Value"], vertical_scroll_only=True,
+                            auto_size_columns=True, num_rows=30,
+                            alternating_row_color='#DAE0E6', header_background_color='#DAE0E6')],
+                  [sg.T("Data Memory", key='-T3-')],
+                  [sg.Table(values=t_list, headings=["Address", "Value(+0)", 'Value(+4)', 'Value(+8)', 'Value(+12)',
+                                                     'Value(+16)', 'Value(+20)', 'Value(+24)', 'Value(+28)'],
+                            key='-DM-',
+                            vertical_scroll_only=True, alternating_row_color='#DAE0E6',
+                            header_background_color='#DAE0E6'
+                            )],
+                  [sg.Button('Exit')]]
+
+        window = sg.Window("Project 2: Mars Simulator - Eric Moravek", layout, finalize=True, resizable=True)
+        window['-REG-'].expand(True, True, True)
+        window['-DM-'].expand(True, True, True)
+        window['-OUTPUT-' + sg.WRITE_ONLY_KEY].expand(True, True, True)
+        window['-T1-'].expand(True, True, True)
+        window['-T2-'].expand(True, True, True)
+        window['-T3-'].expand(True, True, True)
+
+    else:
+        window = sg.Window()
+        window.close()
 
     while pc < last_key + 4:  # While loop to step through the program instruction memory
 
@@ -526,8 +563,8 @@ def simulator(instr_mem, bin_instr):
             # Store the number of similar bits
             reg[rd] = sim
 
-        # if step flag is set then prepare the instruction strings to be printed
-        if step_flag == 'step':
+
+
 
             # indexing adjustment variable
             x = int(pc / 4)
@@ -550,9 +587,10 @@ def simulator(instr_mem, bin_instr):
 
                 instr_str = ("opcode = " + str(bin_instr[x][0:6]) + ' imm = ' + str(bin_instr[x][6:32]))
 
-        if step_flag == 'step':
+        if run_mode == 'step':
 
             while True:  # Event Loop
+
                 event, values = window.read()
 
                 reg_string = ''
@@ -597,6 +635,50 @@ def simulator(instr_mem, bin_instr):
                     break
 
                 window.refresh()
+        elif run_mode == 'free':
+
+            if pc == last_key+4:
+                event = window.read()
+
+                # If exit is pressed or window is closed close the window and break loop
+                if event == sg.WIN_CLOSED or event == 'Exit':
+                    window.close()
+                    break
+
+
+            reg_string = ''
+
+            # Print our Binary Instruction Information
+
+            window['-OUTPUT-' + sg.WRITE_ONLY_KEY].update(
+                window['-OUTPUT-' + sg.WRITE_ONLY_KEY].get() + "PC: " +
+                str(pc) + "\n" + instr_str + "\nASM: " + instr_mem[pc] + "\n")
+
+            for i in reg_key:
+                reg_string += (str(i) + ": " + str(reg[i]) + "\n")
+
+            # Update the Register
+            reg_list.clear()
+
+
+            for i in reg_key:
+                reg_list.append([i, reg[i]])
+
+            window['-REG-'].update(values=reg_list)
+
+            # Reset the Table List and update the values
+            t_list.clear()
+            for n in range(8192, 12288, 32):
+                print("N: ", n)
+
+                t_list.append(
+                    [n, data_mem[int(n)], data_mem[int(n) + 4], data_mem[int(n) + 8], data_mem[int(n) + 12],
+                     data_mem[int(n) + 16], data_mem[int(n) + 20], data_mem[int(n) + 24],
+                     data_mem[int(n) + 28]])
+
+            window['-DM-'].update(values=t_list)
+            window.refresh()
+
 
 
         stats_list[0] += 1
@@ -604,7 +686,7 @@ def simulator(instr_mem, bin_instr):
         pc += 4
 
     # Non-stop mode, print register content with pc, dm content, and statistics
-    if step_flag.lower() != 'step':
+    if run_mode.lower() != 'step':
         print("Reg: ", reg)
         print("DM: ", data_mem)
 
