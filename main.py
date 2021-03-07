@@ -332,11 +332,12 @@ def simulator(instr_mem, bin_instr):
                sg.T("Register", justification='r', k='-T2-')],
               [sg.Multiline(size=(66, 20), key='-OUTPUT-' + sg.WRITE_ONLY_KEY, write_only=True, autoscroll=True),
                sg.Table(values=reg_list, key='-REG-', headings=["Register", "Value"], vertical_scroll_only=True,
-                        auto_size_columns=True, num_rows=30,alternating_row_color='light blue')],
+                        auto_size_columns=True, num_rows=30,
+                        alternating_row_color='#DAE0E6', header_background_color='#DAE0E6')],
               [sg.T("Data Memory", key='-T3-')],
               [sg.Table(values=t_list, headings=["Address", "Value(+0)", 'Value(+4)', 'Value(+8)', 'Value(+12)',
                                                  'Value(+16)', 'Value(+20)', 'Value(+24)', 'Value(+28)'], key='-DM-',
-                        vertical_scroll_only=True,
+                        vertical_scroll_only=True, alternating_row_color='#DAE0E6', header_background_color='#DAE0E6'
                         )],
               [sg.Button('Exit'), sg.Button('Next', k='-NEXT-', bind_return_key=True, enable_events=True)]]
 
