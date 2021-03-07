@@ -113,12 +113,12 @@ def int_to_5bin_string(i):
     return s
 
 
-# convert in to a binary string of 16 bits
-def int_to_16bin_string(i):
+# convert in to a binary string of 32 bits
+def int_to_32bin_string(i):
     if i >= 0:
-        s = bin(i)[2:].zfill(16)
+        s = bin(i)[2:].zfill(32)
     else:  # neg number
-        t = bin(0 - i)[2:].zfill(16)
+        t = bin(0 - i)[2:].zfill(32)
         s = twos_comp(t)
     return s
 
@@ -197,11 +197,18 @@ def disassembler(lines):
             imm = bin_to_dec(ln[16:32])
             addr = 4 * imm
 
-            label = "label_" + str(lc)
-            label_dict[label] = addr
-            reversed_label_dict[addr] = label
+            # If there is already a label pointing to that address
+            # use the label already pointing to that address
+            if addr in label_dict.values():
+                label = reversed_label_dict[addr]
 
-            lc += 1
+            # Else Create a new label and increment label count
+            else:
+                label = "label_" + str(lc)
+                label_dict[label] = addr
+                reversed_label_dict[addr] = label
+
+                lc += 1
 
             asm_inst[pc] = opcode + " " + label
 
@@ -209,7 +216,6 @@ def disassembler(lines):
             rs = str(int(ln[6:11], 2))
             rt = str(int(ln[11:16], 2))
             imm = str(bin_to_dec(ln[16:32]))
-            # print("imm: " + imm + " " + ln[16:32])
 
             # I type instruction
             if op == "001000":
@@ -234,12 +240,18 @@ def disassembler(lines):
                 # Create label for label dict
                 addr = pc + 4 + 4 * int(imm)
 
-                label = "label_" + str(lc)
-                lc += 1
+                # If there is already a label pointing to that address
+                # use the label already pointing to that address
+                if addr in label_dict.values():
+                    label = reversed_label_dict[addr]
 
-                # Store the labels into two dictionaries
-                label_dict[label] = addr
-                reversed_label_dict[addr] = label
+                # Else Create a new label and increment label count
+                else:
+                    label = "label_" + str(lc)
+                    label_dict[label] = addr
+                    reversed_label_dict[addr] = label
+
+                    lc += 1
 
                 asm_inst[pc] = opcode + " $" + rt + ", $" + rs + ", " + label
 
@@ -250,10 +262,18 @@ def disassembler(lines):
                 # Create label for label dict
                 addr = pc + 4 + 4 * int(imm)
 
-                label = "label_" + str(lc)
-                lc += 1
-                label_dict[label] = addr
-                reversed_label_dict[addr] = label
+                # If there is already a label pointing to that address
+                # use the label already pointing to that address
+                if addr in label_dict.values():
+                    label = reversed_label_dict[addr]
+
+                # Else Create a new label and increment label count
+                else:
+                    label = "label_" + str(lc)
+                    label_dict[label] = addr
+                    reversed_label_dict[addr] = label
+
+                    lc += 1
 
                 asm_inst[pc] = opcode + " $" + rt + ", $" + rs + ", " + label
 
@@ -293,6 +313,7 @@ def simulator(instr_mem, bin_instr):
     for i_prime in range(0, 31):  # Initialize all registers to 0
         name = "$" + str(i_prime)
         reg[name] = 0
+    reg['PC'] = 0
     reg["hi"] = 0
     reg["lo"] = 0
 
@@ -314,8 +335,6 @@ def simulator(instr_mem, bin_instr):
     # Last instruction used as a key for loop
     last_key = list(instr_mem)[-1]
 
-
-
     # Get the registers and keys in the format for the GUI
     reg_key = list(reg.keys())
 
@@ -326,11 +345,9 @@ def simulator(instr_mem, bin_instr):
     t_list = []
 
     for i in reg_key:
-
         reg_list.append([i, reg[i]])
 
     for n in range(8192, 12288, 32):
-
         t_list.append([n, data_mem[int(n)], data_mem[int(n) + 4], data_mem[int(n) + 8], data_mem[int(n) + 12],
                        data_mem[int(n) + 16], data_mem[int(n) + 20], data_mem[int(n) + 24], data_mem[int(n) + 28]])
 
@@ -345,12 +362,15 @@ def simulator(instr_mem, bin_instr):
                             alternating_row_color='#DAE0E6', header_background_color='#DAE0E6')],
                   [sg.T("Data Memory", key='-T3-')],
                   [sg.Table(values=t_list, headings=["Address", "Value(+0)", 'Value(+4)', 'Value(+8)', 'Value(+12)',
-                                                     'Value(+16)', 'Value(+20)', 'Value(+24)', 'Value(+28)'], key='-DM-',
-                            vertical_scroll_only=True, alternating_row_color='#DAE0E6', header_background_color='#DAE0E6'
+                                                     'Value(+16)', 'Value(+20)', 'Value(+24)', 'Value(+28)'],
+                            key='-DM-',
+                            vertical_scroll_only=True, alternating_row_color='#DAE0E6',
+                            header_background_color='#DAE0E6'
                             )],
                   [sg.Button('Exit'), sg.Button('Next', k='-NEXT-', bind_return_key=True, enable_events=True)]]
 
-        window = sg.Window("Project 2: Mars Simulator - Eric Moravek", layout, finalize=True, resizable=True)
+        window = sg.Window("Project 2: Mars Simulator - Eric Moravek", layout, finalize=True, resizable=True,
+                           element_justification='c')
         window['-REG-'].expand(True, True, True)
         window['-DM-'].expand(True, True, True)
         window['-OUTPUT-' + sg.WRITE_ONLY_KEY].expand(True, True, True)
@@ -363,7 +383,8 @@ def simulator(instr_mem, bin_instr):
                    sg.T("Register", justification='r', k='-T2-')],
                   [sg.Multiline(size=(66, 20), key='-OUTPUT-' + sg.WRITE_ONLY_KEY, write_only=True, autoscroll=True),
                    sg.Table(values=reg_list, key='-REG-', headings=["Register", "Value"], vertical_scroll_only=True,
-                            auto_size_columns=True, num_rows=30,
+                            max_col_width=20, num_rows=30, col_widths=[8, 12], auto_size_columns=False,
+                            hide_vertical_scroll=False,
                             alternating_row_color='#DAE0E6', header_background_color='#DAE0E6')],
                   [sg.T("Data Memory", key='-T3-')],
                   [sg.Table(values=t_list, headings=["Address", "Value(+0)", 'Value(+4)', 'Value(+8)', 'Value(+12)',
@@ -374,7 +395,8 @@ def simulator(instr_mem, bin_instr):
                             )],
                   [sg.Button('Exit')]]
 
-        window = sg.Window("Project 2: Mars Simulator - Eric Moravek", layout, finalize=True, resizable=True)
+        window = sg.Window("Project 2: Mars Simulator - Eric Moravek", layout, finalize=True, resizable=True,
+                           element_justification='c')
         window['-REG-'].expand(True, True, True)
         window['-DM-'].expand(True, True, True)
         window['-OUTPUT-' + sg.WRITE_ONLY_KEY].expand(True, True, True)
@@ -382,8 +404,9 @@ def simulator(instr_mem, bin_instr):
         window['-T2-'].expand(True, True, True)
         window['-T3-'].expand(True, True, True)
 
+
     else:
-        window = sg.Window()
+        window = sg.Window('')
         window.close()
 
     while pc < last_key + 4:  # While loop to step through the program instruction memory
@@ -540,7 +563,7 @@ def simulator(instr_mem, bin_instr):
             instr_type = 'j'
             # Fetch the jump addr from the label in instr
             imm = label_dict[instr[1]]
-            # Update PC with the immediate value
+            # Update PC with the immediate value - 4 bec of + 4 at end of loop
             pc = imm - 4
 
         # Special Instruction Type
@@ -551,41 +574,42 @@ def simulator(instr_mem, bin_instr):
             rt = reg['$' + str(instr[3])]
             rs = reg['$' + str(instr[2])]
 
-            rt_bin = int_to_16bin_string(rt)
-            rs_bin = int_to_16bin_string(rs)
+            # If we are comparing 32 bit immediate other wise convert the function int_to_32bin_string() back to 16
+            rt_bin = int_to_32bin_string(rt)
+            rs_bin = int_to_32bin_string(rs)
+
             sim = 0
 
             # step through and find the similar bits
-            for n in range(16):
+            for n in range(32):
+
                 if rs_bin[n] == rt_bin[n]:
                     sim += 1
 
             # Store the number of similar bits
             reg[rd] = sim
 
-
-
-
             # indexing adjustment variable
-            x = int(pc / 4)
+        x = int(pc / 4)
 
-            # J-type instructions
-            if instr_type == 'r':
+        # Prepare Instruction String for Printing Binary Step Instructions
+        # R-type instructions
+        if instr_type == 'r':
 
-                instr_str = ("opcode = " + str(bin_instr[x][0:6]) + ' rs = ' + str(bin_instr[x][6:11])
-                             + ' rt = ' + str(bin_instr[x][11:16]) + ' rd = ' + str(bin_instr[x][16:21])
-                             + ' sh = ' + bin_instr[x][21:26] + ' func = ' + str(bin_instr[x][26:32]))
+            instr_str = ("opcode = " + str(bin_instr[x][0:6]) + ' rs = ' + str(bin_instr[x][6:11])
+                         + ' rt = ' + str(bin_instr[x][11:16]) + ' rd = ' + str(bin_instr[x][16:21])
+                         + ' sh = ' + bin_instr[x][21:26] + ' func = ' + str(bin_instr[x][26:32]))
 
             # I-type instructions
-            elif instr_type == 'i':
+        elif instr_type == 'i':
 
-                instr_str = ("opcode = " + str(bin_instr[x][0:6]) + ' rs = ' + str(bin_instr[x][6:11]) + " rt = "
-                             + str(bin_instr[x][11:16]) + ' imm = ' + bin_instr[x][16:32])
+            instr_str = ("opcode = " + str(bin_instr[x][0:6]) + ' rs = ' + str(bin_instr[x][6:11]) + " rt = "
+                         + str(bin_instr[x][11:16]) + ' imm = ' + bin_instr[x][16:32])
 
             # J-type instructions
-            elif instr_type == 'j':
+        elif instr_type == 'j':
 
-                instr_str = ("opcode = " + str(bin_instr[x][0:6]) + ' imm = ' + str(bin_instr[x][6:32]))
+            instr_str = ("opcode = " + str(bin_instr[x][0:6]) + ' imm = ' + str(bin_instr[x][6:32]))
 
         if run_mode == 'step':
 
@@ -606,11 +630,13 @@ def simulator(instr_mem, bin_instr):
                     window['-OUTPUT-' + sg.WRITE_ONLY_KEY].update(
                         window['-OUTPUT-' + sg.WRITE_ONLY_KEY].get() + "PC: " +
                         str(pc) + "\n" + instr_str + "\nASM: " + instr_mem[pc] + "\n")
+
                     for i in reg_key:
                         reg_string += (str(i) + ": " + str(reg[i]) + "\n")
 
-
                     reg_list.clear()
+                    # + 4 to account for increment delay between the display and increment
+                    reg['PC'] = pc + 4
                     for i in reg_key:
                         reg_list.append([i, reg[i]])
 
@@ -619,8 +645,6 @@ def simulator(instr_mem, bin_instr):
                     # Reset the Table List
                     t_list.clear()
                     for n in range(8192, 12288, 32):
-                        print("N: ", n)
-
                         t_list.append(
                             [n, data_mem[int(n)], data_mem[int(n) + 4], data_mem[int(n) + 8], data_mem[int(n) + 12],
                              data_mem[int(n) + 16], data_mem[int(n) + 20], data_mem[int(n) + 24],
@@ -630,21 +654,20 @@ def simulator(instr_mem, bin_instr):
                     window.refresh()
                     break
 
-                if pc == last_key + 4:
-                    window.close()
-                    break
+                # if pc == last_key + 4:
+                #     window.close()
+                #     break
 
                 window.refresh()
         elif run_mode == 'free':
 
-            if pc == last_key+4:
+            if pc == last_key + 4:
                 event = window.read()
 
                 # If exit is pressed or window is closed close the window and break loop
                 if event == sg.WIN_CLOSED or event == 'Exit':
                     window.close()
                     break
-
 
             reg_string = ''
 
@@ -657,10 +680,9 @@ def simulator(instr_mem, bin_instr):
             for i in reg_key:
                 reg_string += (str(i) + ": " + str(reg[i]) + "\n")
 
-            # Update the Register
+            # Update the Register list
             reg_list.clear()
-
-
+            reg['PC'] = pc + 4
             for i in reg_key:
                 reg_list.append([i, reg[i]])
 
@@ -669,8 +691,6 @@ def simulator(instr_mem, bin_instr):
             # Reset the Table List and update the values
             t_list.clear()
             for n in range(8192, 12288, 32):
-                print("N: ", n)
-
                 t_list.append(
                     [n, data_mem[int(n)], data_mem[int(n) + 4], data_mem[int(n) + 8], data_mem[int(n) + 12],
                      data_mem[int(n) + 16], data_mem[int(n) + 20], data_mem[int(n) + 24],
@@ -679,11 +699,11 @@ def simulator(instr_mem, bin_instr):
             window['-DM-'].update(values=t_list)
             window.refresh()
 
-
-
         stats_list[0] += 1
         # Update to the next instruction
         pc += 4
+        # Set the register PC to the new Value
+        reg['PC'] = pc
 
     # Non-stop mode, print register content with pc, dm content, and statistics
     if run_mode.lower() != 'step':
@@ -730,7 +750,7 @@ def stats_window(arr):
                [sg.Button("Exit", bind_return_key=True)]]
 
     window = sg.Window('MARS Simulator - Statistics', layout2, element_justification='c',
-                       resizable=True, finalize=True)
+                       resizable=True, finalize=True, size=(300, 250))
     window['-l-'].expand(True, True, True)
     window['-r-'].expand(True, True, True)
     window['-EXPAND-'].expand(True, True, True)
@@ -744,22 +764,6 @@ def stats_window(arr):
         if event == sg.WIN_CLOSED or event == 'Exit':
             window.close()
             break
-
-
-# Delete if not needed
-def sign_extension(bin_str, length):
-    # find MSB
-    if bin_str[0] == 1:
-        # Sign extend to length
-        for i in range(length):
-            bin_str = '1' + bin_str
-
-
-    elif bin_str[0] == 0:
-        for i in range(length):
-            bin_str = '1' + bin_str
-
-    return bin_str
 
 
 # Selects Run Mode of the program with main_gui interface
