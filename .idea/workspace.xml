@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6fea4a7b-a66c-48ce-aa4d-95c7c80d3d7d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-    </list>
+    <list default="true" id="6fea4a7b-a66c-48ce-aa4d-95c7c80d3d7d" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -87,7 +84,7 @@
       <workItem from="1614903087305" duration="3755000" />
       <workItem from="1614970660443" duration="661000" />
       <workItem from="1615042989121" duration="43331000" />
-      <workItem from="1615130985282" duration="3871000" />
+      <workItem from="1615130985282" duration="3980000" />
     </task>
     <task id="LOCAL-00001" summary="Project 2 with simple GUI&#10;Free Run Mode not implemented yet&#10;Further testing needs to be done">
       <created>1615077991735</created>
