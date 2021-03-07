@@ -7,6 +7,7 @@ import PySimpleGUI as sg
 # sg.theme('DarkBlack')  # Set the Color of the main_gui
 sg.theme('Reddit')
 
+
 # Read in the data from file, converts hex to bin
 # and stores in then returns a binary list
 def read_file():
@@ -317,25 +318,35 @@ def simulator(instr_mem, bin_instr):
     reg_key = list(reg.keys())
     dm_key = list(data_mem.keys())
 
+    reg_list = []
+    t_list = []
+    for i in reg_key:
+        reg_list.append([i, reg[i]])
 
+    for n in range(8192, 12288, 32):
+        t_list.append([n, data_mem[int(n)], data_mem[int(n) + 4], data_mem[int(n) + 8], data_mem[int(n) + 12],
+                       data_mem[int(n) + 16], data_mem[int(n) + 20], data_mem[int(n) + 24], data_mem[int(n) + 28]])
 
     # Main window code setup
     layout = [[sg.Text('Step by Step Mode Instructions', size=(30, 1), k='-T1-'),
                sg.T("Register", justification='r', k='-T2-')],
-              [sg.Multiline(size=(70, 20), key='-OUTPUT-' + sg.WRITE_ONLY_KEY, write_only=True, autoscroll=True),
-               sg.Multiline(key='-REG-' + sg.WRITE_ONLY_KEY, write_only=True, size=(10, 32))],
+              [sg.Multiline(size=(66, 20), key='-OUTPUT-' + sg.WRITE_ONLY_KEY, write_only=True, autoscroll=True),
+               sg.Table(values=reg_list, key='-REG-', headings=["Register", "Value"], vertical_scroll_only=True,
+                        auto_size_columns=True, num_rows=30,alternating_row_color='light blue')],
               [sg.T("Data Memory", key='-T3-')],
-              [sg.Multiline(key='-DM-' + sg.WRITE_ONLY_KEY, write_only=True, size=(85, 7))],
+              [sg.Table(values=t_list, headings=["Address", "Value(+0)", 'Value(+4)', 'Value(+8)', 'Value(+12)',
+                                                 'Value(+16)', 'Value(+20)', 'Value(+24)', 'Value(+28)'], key='-DM-',
+                        vertical_scroll_only=True,
+                        )],
               [sg.Button('Exit'), sg.Button('Next', k='-NEXT-', bind_return_key=True, enable_events=True)]]
 
     window = sg.Window("Project 2: Mars Simulator - Eric Moravek", layout, finalize=True, resizable=True)
-    window['-REG-' + sg.WRITE_ONLY_KEY].expand(True, True, True)
-    window['-DM-' + sg.WRITE_ONLY_KEY].expand(True, True, True)
+    window['-REG-'].expand(True, True, True)
+    window['-DM-'].expand(True, True, True)
     window['-OUTPUT-' + sg.WRITE_ONLY_KEY].expand(True, True, True)
     window['-T1-'].expand(True, True, True)
     window['-T2-'].expand(True, True, True)
     window['-T3-'].expand(True, True, True)
-
 
     while pc < last_key + 4:  # While loop to step through the program instruction memory
 
@@ -559,16 +570,24 @@ def simulator(instr_mem, bin_instr):
                     for i in reg_key:
                         reg_string += (str(i) + ": " + str(reg[i]) + "\n")
 
-                    window['-REG-' + sg.WRITE_ONLY_KEY].update(reg_string)
-                    # Print Register
-                    t = 0
-                    for n in dm_key:
-                        if t == 8:  # Print 11 registers per line
-                            t = 0
-                            dm_string += '\n'
-                        dm_string += (str(hex(n)).upper() + ": " + str(data_mem[n]) + "\t")
 
-                    window['-DM-' + sg.WRITE_ONLY_KEY].update(dm_string)
+                    reg_list.clear()
+                    for i in reg_key:
+                        reg_list.append([i, reg[i]])
+
+                    window['-REG-'].update(values=reg_list)
+
+                    # Reset the Table List
+                    t_list.clear()
+                    for n in range(8192, 12288, 32):
+                        print("N: ", n)
+
+                        t_list.append(
+                            [n, data_mem[int(n)], data_mem[int(n) + 4], data_mem[int(n) + 8], data_mem[int(n) + 12],
+                             data_mem[int(n) + 16], data_mem[int(n) + 20], data_mem[int(n) + 24],
+                             data_mem[int(n) + 28]])
+
+                    window['-DM-'].update(values=t_list)
                     window.refresh()
                     break
 
