@@ -253,7 +253,9 @@ def disassembler(lines):
 
                     lc += 1
 
-                asm_inst[pc] = opcode + " $" + rt + ", $" + rs + ", " + label
+                # asm_inst[pc] = opcode + " $" + rt + ", $" + rs + ", " + label
+                # Mips encodes rs first
+                asm_inst[pc] = opcode + " $" + rs + ", $" + rt + ", " + label
 
 
             elif op == "000101":
@@ -275,7 +277,9 @@ def disassembler(lines):
 
                     lc += 1
 
-                asm_inst[pc] = opcode + " $" + rt + ", $" + rs + ", " + label
+                # asm_inst[pc] = opcode + " $" + rt + ", $" + rs + ", " + label
+                # Mips encodes rs first
+                asm_inst[pc] = opcode + " $" + rs + ", $" + rt + ", " + label
 
             elif op == "100011":
                 opcode = "lw"
@@ -358,7 +362,8 @@ def simulator(instr_mem, bin_instr):
                    sg.T("Register", justification='r', k='-T2-')],
                   [sg.Multiline(size=(66, 20), key='-OUTPUT-' + sg.WRITE_ONLY_KEY, write_only=True, autoscroll=True),
                    sg.Table(values=reg_list, key='-REG-', headings=["Register", "Value"], vertical_scroll_only=True,
-                            auto_size_columns=True, num_rows=30,
+                            max_col_width=20, num_rows=30, col_widths=[8, 12], auto_size_columns=False,
+                            hide_vertical_scroll=False,
                             alternating_row_color='#DAE0E6', header_background_color='#DAE0E6')],
                   [sg.T("Data Memory", key='-T3-')],
                   [sg.Table(values=t_list, headings=["Address", "Value(+0)", 'Value(+4)', 'Value(+8)', 'Value(+12)',
@@ -459,7 +464,8 @@ def simulator(instr_mem, bin_instr):
 
             # Compare and update pc if needed
             if reg['$' + str(instr[1])] == reg['$' + str(instr[2])]:
-                pc = label_dict[instr[3]] - 4
+                pc = label_dict[instr[3]] - 4 # change back if needed
+
 
 
 
@@ -469,7 +475,8 @@ def simulator(instr_mem, bin_instr):
 
             # Compare and update pc if needed
             if reg['$' + str(instr[1])] != reg['$' + str(instr[2])]:
-                pc = label_dict[instr[3]] - 4
+                pc = label_dict[instr[3]] - 4 # Change back if needed
+
 
         # Data memory instructions
         elif instr[0] == "lw":
